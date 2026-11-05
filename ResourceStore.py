@@ -3,13 +3,14 @@ class ResourceStore:
     def __init__(self):
         self.__quantities = {"food": 0, "water": 0, "oxygen": 0}
 
-# returns none if resource is not a string or if it doesnt exist in the dictionary, stock stays unchanged. And returns the requested quantity.
+# returns none if resource is not a string or if it doesnt exist in the dictionary, stock stays unchanged. And returns the currently stored quantity
     def quantity_of(self, resource):
         if type(resource) is not str or resource not in self.__quantities:
             return None
         return self.__quantities[resource]
 
-# returns none if resource is not a str or resource doesnt exist in the dictionary, 
+# returns none if resource is not a str or resource doesnt exist in the dictionary, and amount is a positive integer,
+ 
     def add(self, resource, amount):
         if type(resource) is not str or resource not in self.__quantities or type(amount) is not int or amount <= 0:
             return None
@@ -17,7 +18,7 @@ class ResourceStore:
         new_quantity = self.__quantities[resource] + amount
         self.__quantities[resource] = new_quantity
         return new_quantity
-#try_consume function, first it checks if its in the dictionary and returns False for invalid input or insufficient stock.
+#try_consume function, first it checks every requested name, amount and available stock if its in the dictionary and returns False for invalid input or insufficient stock.
     def try_consume(self, requirements):
         if type(requirements) is not dict:
             return False
