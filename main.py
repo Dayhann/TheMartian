@@ -1,25 +1,55 @@
-from ResourceStore import ResourceStore
+from Astronaut import Astronaut
+from Greenhouse import Greenhouse
+from MarsOutpost import MarsOutpost
+from OxygenGenerator import OxygenGenerator
+from Rover import Rover
+from WaterExtractor import WaterExtractor
 
-store = ResourceStore()
 
-store.add("food", 2)
-store.add("water", 1)
-store.add("oxygen", 3)
+astronaut = Astronaut("Alex")
+outpost = MarsOutpost(astronaut)
+rover = Rover()
 
-print("Starting stock:", store)
+outpost.add_supplies("food", 3)
+outpost.add_supplies("water", 1)
+outpost.add_supplies("oxygen", 1)
 
-# failed_request = {"food": 1, "water": 2, "oxygen": 1}
-# print("Request that needs too much water:", failed_request)
-# print("Result:", store.try_consume(failed_request))
-# print("Stock after failed request:", store)
+outpost.add_equipment(WaterExtractor())
+outpost.add_equipment(OxygenGenerator())
+outpost.add_equipment(Greenhouse())
+outpost.add_equipment(rover)
 
-# successful_request = {"food": 1, "water": 1, "oxygen": 1}
-# print("Request with enough supplies:", successful_request)
-# print("Result:", store.try_consume(successful_request))
-# print("Stock after successful request:", store)
+print("Starting outpost:")
+print(outpost.status_report())
+print()
 
-# print("Adding negative water:", store.add("water", -3))
-# print("Adding unknown fuel:", store.add("fuel", 2))
-# print("Final stock:", store)
-# print("Food remaining:", store.quantity_of("food"))
+while not outpost.is_finished():
+    next_sol = outpost.sols_completed + 1
+    if next_sol == 2:
+        rover.break_down()
+        print("Rover breakdown. Broken equipment:")
+        for item in outpost.get_broken_equipment():
+            print(item)
+    elif next_sol == 3:
+        rover.repair()
+        print("Rover repaired.")
+    elif next_sol == 6:
+        rover.recharge()
+        print("Rover recharged.")
 
+    outpost.advance_sol()
+    print(outpost.status_report())
+    print()
+
+print("Recorded equipment failures:")
+for entry in outpost.get_log_entries("failed"):
+    print(entry)
+
+print("\nSeparate shortage example:")
+shortage_outpost = MarsOutpost(Astronaut("Sam"), target_sols=2)
+shortage_outpost.add_supplies("food", 2)
+shortage_outpost.add_supplies("oxygen", 2)
+shortage_outpost.advance_sol()
+print(shortage_outpost.status_report())
+for entry in shortage_outpost.get_log_entries("failed"):
+    print(entry)
